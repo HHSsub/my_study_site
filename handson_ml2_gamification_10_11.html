@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실전 딥러닝 개념 마스터리 - 시각화 중심</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        * {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        .neuron {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 2px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .neuron.active {
+            background: linear-gradient(45deg, #4f46e5, #06b6d4);
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+        }
+        
+        .neuron.inactive {
+            background: #d1d5db;
+            opacity: 0.3;
+        }
+        
+        .concept-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .concept-card.completed {
+            border-left-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4, #ffffff);
+        }
+        
+        .quiz-option {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid #e5e7eb;
+            margin: 0.25rem 0;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        
+        .quiz-option:hover {
+            background-color: #f3f4f6;
+            border-color: #3b82f6;
+        }
+        
+        .quiz-option.correct {
+            background-color: #dcfce7;
+            border-color: #16a34a;
+        }
+        
+        .quiz-option.incorrect {
+            background-color: #fef2f2;
+            border-color: #dc2626;
+        }
+        
+        .graph-container {
+            width: 100%;
+            height: 200px;
+            background: #f8fafc;
+            border-radius: 8px;
+            position: relative;
+            margin: 1rem 0;
+        }
+        
+        .optimizer-path {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            transition: all 0.5s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .neuron-animate {
+            animation: bounce 1s infinite;
+        }
+        
+        .formula-box {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+        }
+        
+        .drag-item {
+            background: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: move;
+            display: inline-block;
+            margin: 0.25rem;
+            user-select: none;
+        }
+        
+        .drop-zone {
+            min-height: 40px;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        
+        .drop-zone.correct {
+            border-color: #16a34a;
+            background-color: #dcfce7;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradient-move 15s ease infinite;
+        }
+        
+        @keyframes gradient-move {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8 text-center">
+        <div class="max-w-6xl mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-4">🧠 실전 딥러닝 개념 마스터리</h1>
+            <p class="text-xl opacity-90">시각화와 실습 중심의 핸즈온 머신러닝 2판 10-11장</p>
+            <div class="mt-6 flex flex-wrap justify-center items-center gap-8">
+                <div class="text-center">
+                    <div class="text-3xl font-bold" id="totalScore">0</div>
+                    <div class="text-sm opacity-80">총 점수</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold" id="conceptsMastered">0/12</div>
+                    <div class="text-sm opacity-80">개념 완성</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold" id="totalInteractions">0</div>
+                    <div class="text-sm opacity-80">상호작용</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Chapter 10: 케라스를 이용한 인공신경망 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 text-center">📖 Chapter 10: 케라스를 이용한 인공신경망</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 퍼셉트론 -->
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="perceptron">
+                    <h3 class="text-xl font-semibold mb-3">🔹 퍼셉트론 (Perceptron)</h3>
+                    
+                    <p class="text-gray-600 mb-4">가장 단순한 형태의 인공 뉴런. 입력을 받아 가중합을 계산하고 활성화 함수를 통해 출력을 생성.</p>
+                    
+                    <div class="formula-box text-center">
+                        y = step(w₁x₁ + w₂x₂ + b)
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">🎯 퍼셉트론 시뮬레이션</h4>
+                        <div class="grid grid-cols-3 gap-2 mb-3 text-center">
+                            <div>
+                                <input type="number" id="input1" value="1" class="w-full p-1 border rounded text-center" onchange="updatePerceptron()">
+                                <div class="text-xs">입력 x₁</div>
+                            </div>
+                            <div>
+                                <input type="number" id="input2" value="1" class="w-full p-1 border rounded text-center" onchange="updatePerceptron()">
+                                <div class="text-xs">입력 x₂</div>
+                            </div>
+                            <div>
+                                <input type="number" id="bias" value="0" class="w-full p-1 border rounded text-center" onchange="updatePerceptron()">
+                                <div class="text-xs">편향 b</div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                            <div class="text-lg font-bold">출력: <span id="perceptronOutput">1</span></div>
+                            <div class="text-sm text-gray-600">가중합: <span id="weightedSum">2</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <div class="text-xs text-gray-500 mb-2" id="perceptronStatus">값을 조정해보세요</div>
+                        <button onclick="completePerceptron()" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors" id="perceptronBtn">
+                            시뮬레이션 완료 <i class="fas fa-check ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 다층 퍼셉트론 -->
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="mlp">
+                    <h3 class="text-xl font-semibold mb-3">🔹 다층 퍼셉트론 (MLP)</h3>
+                    
+                    <p class="text-gray-600 mb-4">여러 층의 퍼셉트론을 연결한 신경망. 은닉층을 통해 비선형 문제 해결 가능.</p>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">🏗️ 네트워크 구조 설계</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-sm">은닉층 수: <span id="hiddenLayersDisplay">2</span></label>
+                                <input type="range" min="1" max="4" value="2" class="w-full" id="hiddenLayersSlider" onchange="updateMLP()">
+                            </div>
+                            <div>
+                                <label class="text-sm">층당 뉴런: <span id="neuronsDisplay">64</span></label>
+                                <input type="range" min="16" max="128" value="64" step="16" class="w-full" id="neuronsSlider" onchange="updateMLP()">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 p-3 bg-gray-50 rounded text-center" id="mlpViz">
+                            <div class="flex justify-center items-center space-x-2">
+                                <div class="flex flex-col space-y-1">
+                                    <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                                    <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                                    <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                                </div>
+                                <i class="fas fa-arrow-right text-gray-400"></i>
+                                <div class="flex flex-col space-y-1">
+                                    <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                                    <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                                    <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                                    <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                                </div>
+                                <i class="fas fa-arrow-right text-gray-400"></i>
+                                <div class="flex flex-col space-y-1">
+                                    <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 p-2 bg-blue-50 rounded text-sm">
+                            <div>파라미터 수: <span id="paramCount">~3,000개</span></div>
+                            <div>복잡도: <span id="complexity">보통</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <div class="text-xs text-gray-500 mb-2" id="mlpStatus">구조를 설계해보세요</div>
+                        <button onclick="completeMLP()" class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors" id="mlpBtn">
+                            설계 완료 <i class="fas fa-network-wired ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 케라스 API -->
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="keras">
+                    <h3 class="text-xl font-semibold mb-3">🔹 케라스 API</h3>
+                    
+                    <p class="text-gray-600 mb-4">Sequential API, Functional API, Subclassing API의 세 가지 방식으로 모델 구성.</p>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">💻 코드 블록 조립하기</h4>
+                        <div class="mb-3">
+                            <div class="text-sm mb-2">Sequential API 모델을 만들어보세요:</div>
+                            <div id="codeBlocks" class="mb-3">
+                                <div class="drag-item" draggable="true" data-order="1">model = Sequential()</div>
+                                <div class="drag-item" draggable="true" data-order="2">model.add(Dense(128, activation='relu'))</div>
+                                <div class="drag-item" draggable="true" data-order="3">model.add(Dense(10, activation='softmax'))</div>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <div class="drop-zone" data-position="1">1. 첫 번째 라인</div>
+                                <div class="drop-zone" data-position="2">2. 두 번째 라인</div>
+                                <div class="drop-zone" data-position="3">3. 세 번째 라인</div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center p-3 bg-gray-50 rounded" id="kerasResult">
+                            올바른 순서로 배치하세요
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <div class="text-xs text-gray-500 mb-2" id="kerasStatus">코드를 조립해보세요</div>
+                        <button onclick="completeKeras()" class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition-colors" id="kerasBtn">
+                            조립 완료 <i class="fas fa-code ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 11: 심층 신경망 훈련하기 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 text-center">📖 Chapter 11: 심층 신경망 훈련하기</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 활성화 함수 -->
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="activation">
+                    <h3 class="text-xl font-semibold mb-3">🔥 활성화 함수</h3>
+                    
+                    <p class="text-gray-600 mb-4">뉴런의 출력을 결정하는 함수. ReLU, Sigmoid, Tanh 등이 있음.</p>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">📊 함수-그래프 매칭 퀴즈</h4>
+                        <div class="graph-container">
+                            <canvas id="activationChart" width="300" height="180"></canvas>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <div class="text-sm mb-2">이 그래프는 어떤 활성화 함수일까요?</div>
+                            <div class="space-y-2" id="activationOptions">
+                                <div class="quiz-option" onclick="checkActivation(this, false)">
+                                    f(x) = 1/(1 + e^(-x)) <span class="text-gray-500">(Sigmoid)</span>
+                                </div>
+                                <div class="quiz-option" onclick="checkActivation(this, true)">
+                                    f(x) = max(0, x) <span class="text-gray-500">(ReLU)</span>
+                                </div>
+                                <div class="quiz-option" onclick="checkActivation(this, false)">
+                                    f(x) = tanh(x) <span class="text-gray-500">(Tanh)</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 text-center">
+                            <button onclick="newActivationQuiz()" class="px-4 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+                                새로운 문제 <i class="fas fa-refresh ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <div class="text-xs text-gray-500 mb-2" id="activationStatus">함수를 맞춰보세요</div>
+                        <button onclick="completeActivation()" class="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors" id="activationBtn">
+                            함수 마스터 <i class="fas fa-chart-line ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 드롭아웃 -->
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="dropout">
+                    <h3 class="text-xl font-semibold mb-3">🎲 드롭아웃 (Dropout)</h3>
+                    
+                    <p class="text-gray-600 mb-4">과적합 방지를 위해 훈련 중 일부 뉴런을 무작위로 비활성화하는 정규화 기법.</p>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">🧪 실시간 드롭아웃 시뮬레이션</h4>
+                        <div class="text-center mb-3">
+                            <label class="text-sm">Dropout Rate: <span id="dropoutRateDisplay">0.2</span></label>
+                            <input type="range" min="0" max="0.8" step="0.1" value="0.2" class="w-full" id="dropoutRateSlider" onchange="updateDropoutRate()">
+                        </div>
+                        
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="grid grid-cols-5 gap-2 justify-center mb-3" id="neuronGrid">
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                                <div class="neuron active"></div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button onclick="simulateDropout()" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+                                    드롭아웃 실행 <i class="fas fa-dice ml-1"></i>
+                                </button>
+                                <button onclick="resetNeurons()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 ml-2">
+                                    리셋
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 p-2 bg-purple-50 rounded text-sm">
+                            <div>활성 뉴런: <span id="activeNeurons">15/15</span></div>
+                            <div>효과: 과적합 방지, 일반화 성능 향상</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <div class="text-xs text-gray-500 mb-2" id="dropoutStatus">드롭아웃을 시뮬레이션해보세요</div>
+                        <button onclick="completeDropout()" class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition-colors" id="dropoutBtn">
+                            정규화 마스터 <i class="fas fa-dice ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 배치 정규화 -->
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="batchnorm">
+                    <h3 class="text-xl font-semibold mb-3">⚡ 배치 정규화</h3>
+                    
+                    <p class="text-gray-600 mb-4">각 층의 입력을 정규화하여 학습 속도 향상과 안정성 확보.</p>
+                    
+                    <div class="formula-box text-center">
+                        x̂ = (x - μ) / √(σ² + ε)<br>
+                        y = γx̂ + β
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">🔢 배치 정규화 체험</h4>
+                        <div class="space-y-3">
+                            <div class="p-3 border rounded">
+                                <div class="text-sm mb-2">배치 데이터: [1, 3, 5, 7, 9]</div>
+                                <div class="text-sm">평균(μ): <span id="batchMean">5</span></div>
+                                <div class="text-sm">표준편차(σ): <span id="batchStd">2.83</span></div>
+                            </div>
+                            
+                            <div class="p-3 bg-blue-50 rounded">
+                                <div class="text-sm font-medium mb-2">정규화 후:</div>
+                                <div class="text-sm" id="normalizedValues">[-1.41, -0.71, 0, 0.71, 1.41]</div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button onclick="animateBatchNorm()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                    정규화 과정 보기 <i class="fas fa-play ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 p-2 bg-blue-50 rounded text-sm">
+                            <div>효과: 내부 공변량 이동 감소</div>
+                            <div>결과: 더 빠르고 안정적인 학습</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <div class="text-xs text-gray-500 mb-2" id="batchnormStatus">정규화 과정을 체험해보세요</div>
+                        <button onclick="completeBatchNorm()" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors" id="batchnormBtn">
+                            정규화 마스터 <i class="fas fa-balance-scale ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 옵티마이저 -->
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="optimizer">
+                    <h3 class="text-xl font-semibold mb-3">🚀 옵티마이저</h3>
+                    
+                    <p class="text-gray-600 mb-4">가중치 업데이트 방식. SGD, Momentum, Adam 등 다양한 알고리즘.</p>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">🎯 경사하강 경로 비교</h4>
+                        <div class="graph-container" id="optimizerViz">
+                            <canvas id="optimizerChart" width="300" height="180"></canvas>
+                        </div>
+                        
+                        <div class="mt-3 grid grid-cols-2 gap-2">
+                            <button onclick="showOptimizerPath('sgd')" class="p-2 bg-red-100 text-red-800 rounded text-sm hover:bg-red-200">
+                                SGD
+                            </button>
+                            <button onclick="showOptimizerPath('momentum')" class="p-2 bg-blue-100 text-blue-800 rounded text-sm hover:bg-blue-200">
+                                Momentum
+                            </button>
+                            <button onclick="showOptimizerPath('adam')" class="p-2 bg-green-100 text-green-800 rounded text-sm hover:bg-green-200">
+                                Adam
+                            </button>
+                            <button onclick="showOptimizerPath('rmsprop')" class="p-2 bg-purple-100 text-purple-800 rounded text-sm hover:bg-purple-200">
+                                RMSprop
+                            </button>
+                        </div>
+                        
+                        <div class="mt-3 p-2 bg-gray-50 rounded text-sm" id="optimizerInfo">
+                            옵티마이저를 선택하여 경로를 확인하세요
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <div class="text-xs text-gray-500 mb-2" id="optimizerStatus">경로 차이를 관찰해보세요</div>
+                        <button onclick="completeOptimizer()" class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition-colors" id="optimizerBtn">
+                            최적화 마스터 <i class="fas fa-route ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 나머지 개념들 간단화 -->
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="initialization">
+                    <h3 class="text-xl font-semibold mb-3">🎯 가중치 초기화</h3>
+                    
+                    <p class="text-gray-600 mb-4">글로럿(Xavier), He 초기화 등으로 그래디언트 소실/폭발 문제 완화.</p>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">⚖️ 초기화 전략 비교</h4>
+                        <div class="space-y-2">
+                            <div class="p-3 border rounded">
+                                <div class="font-medium">Xavier/Glorot</div>
+                                <div class="text-sm text-gray-600">Sigmoid, Tanh에 적합</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <div class="p-3 border rounded">
+                                <div class="font-medium">He 초기화</div>
+                                <div class="text-sm text-gray-600">ReLU에 최적화</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button onclick="completeInitialization()" class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors">
+                            초기화 완료 <i class="fas fa-seedling ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="regularization">
+                    <h3 class="text-xl font-semibold mb-3">🛡️ 정규화 기법</h3>
+                    
+                    <p class="text-gray-600 mb-4">L1, L2 정규화와 조기 종료로 과적합 방지.</p>
+                    
+                    <div class="mt-4 space-y-3">
+                        <div class="p-3 bg-red-50 rounded">
+                            <div class="font-medium">L1 정규화</div>
+                            <div class="text-sm">|w| 절댓값의 합</div>
+                        </div>
+                        <div class="p-3 bg-blue-50 rounded">
+                            <div class="font-medium">L2 정규화</div>
+                            <div class="text-sm">w² 제곱의 합</div>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded">
+                            <div class="font-medium">조기 종료</div>
+                            <div class="text-sm">검증 손실 기준</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button onclick="completeRegularization()" class="w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition-colors">
+                            정규화 완료 <i class="fas fa-shield-alt ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="scheduling">
+                    <h3 class="text-xl font-semibold mb-3">📈 학습률 스케줄링</h3>
+                    
+                    <p class="text-gray-600 mb-4">학습 중 학습률을 동적으로 조절하여 최적화 성능 향상.</p>
+                    
+                    <div class="mt-4">
+                        <div class="h-16 bg-gradient-to-r from-red-200 via-yellow-200 to-green-200 rounded-lg flex items-center justify-center">
+                            <div class="text-sm font-medium">높은 학습률 → 낮은 학습률</div>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <div class="text-sm">단계적 감소, 지수적 감소, 코사인 어닐링</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button onclick="completeScheduling()" class="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                            스케줄링 완료 <i class="fas fa-clock ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="callbacks">
+                    <h3 class="text-xl font-semibold mb-3">🔄 콜백 함수</h3>
+                    
+                    <p class="text-gray-600 mb-4">훈련 중 특정 시점에 실행되는 함수. EarlyStopping, ModelCheckpoint 등.</p>
+                    
+                    <div class="mt-4 space-y-2">
+                        <div class="p-2 bg-red-50 rounded text-sm">
+                            <span class="font-medium">EarlyStopping:</span> 성능 개선 없으면 조기 종료
+                        </div>
+                        <div class="p-2 bg-blue-50 rounded text-sm">
+                            <span class="font-medium">ModelCheckpoint:</span> 최고 성능 모델 저장
+                        </div>
+                        <div class="p-2 bg-green-50 rounded text-sm">
+                            <span class="font-medium">ReduceLROnPlateau:</span> 정체시 학습률 감소
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button onclick="completeCallbacks()" class="w-full bg-teal-500 text-white py-2 rounded-lg hover:bg-teal-600 transition-colors">
+                            콜백 완료 <i class="fas fa-play-circle ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="concept-card bg-white rounded-lg shadow-lg p-6" data-concept="clipping">
+                    <h3 class="text-xl font-semibold mb-3">✂️ 그래디언트 클리핑</h3>
+                    
+                    <p class="text-gray-600 mb-4">그래디언트 폭발 문제 해결을 위해 그래디언트 크기를 제한.</p>
+                    
+                    <div class="mt-4">
+                        <div class="flex items-center justify-center space-x-4">
+                            <div class="text-center">
+                                <div class="w-16 h-8 bg-red-400 rounded mb-1"></div>
+                                <div class="text-xs">폭발 전</div>
+                            </div>
+                            <i class="fas fa-arrow-right text-2xl"></i>
+                            <div class="text-center">
+                                <div class="w-8 h-8 bg-green-400 rounded mb-1"></div>
+                                <div class="text-xs">클리핑 후</div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-center text-sm text-gray-600">
+                            grad_norm > threshold ? grad * (threshold / grad_norm) : grad
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button onclick="completeClipping()" class="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 transition-colors">
+                            클리핑 완료 <i class="fas fa-cut ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 성과 대시보드 -->
+        <section class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-2xl font-bold mb-6 text-center">🏆 학습 성과 대시보드</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                        <div class="text-3xl mb-2">🧠</div>
+                        <div class="text-2xl font-bold text-blue-600" id="masteryProgress">0%</div>
+                        <div class="text-sm text-gray-600">전체 마스터리</div>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                        <div class="text-3xl mb-2">⚡</div>
+                        <div class="text-2xl font-bold text-green-600" id="interactionScore">0</div>
+                        <div class="text-sm text-gray-600">상호작용 점수</div>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+                        <div class="text-3xl mb-2">🎯</div>
+                        <div class="text-2xl font-bold text-purple-600" id="practicalSkill">0%</div>
+                        <div class="text-sm text-gray-600">실무 활용도</div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium">학습 진행률</span>
+                        <span class="text-sm text-gray-600"><span id="overallProgress">0</span>%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500" style="width: 0%" id="progressBar"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 text-center">
+        <div class="max-w-6xl mx-auto px-4">
+            <p class="mb-4">🎓 핸즈온 머신러닝 2판 - 실전 딥러닝 마스터리</p>
+            <p class="text-sm text-gray-400">시각화와 실습으로 딥러닝 개념을 완전히 체득하세요!</p>
+        </div>
+    </footer>
+
+    <script>
+        // 전역 변수
+        let totalScore = 0;
+        let conceptsMastered = 0;
+        let totalInteractions = 0;
+        let activationChart = null;
+        let optimizerChart = null;
+        let currentActivationType = 'relu';
+        let dropoutSimulations = 0;
+        let activationQuizCount = 0;
+        
+        // 개념별 완료 상태
+        const conceptStatus = {
+            perceptron: false,
+            mlp: false,
+            keras: false,
+            activation: false,
+            dropout: false,
+            batchnorm: false,
+            optimizer: false,
+            initialization: false,
+            regularization: false,
+            scheduling: false,
+            callbacks: false,
+            clipping: false
+        };
+        
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            setupDragAndDrop();
+            updatePerceptron();
+            updateMLP();
+            updateDropoutRate();
+            showRandomActivation();
+        });
+        
+        function initializeCharts() {
+            // 활성화 함수 차트
+            const activationCtx = document.getElementById('activationChart');
+            if (activationCtx) {
+                activationChart = new Chart(activationCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Activation Function',
+                            data: [],
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.1,
+                            fill: true,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { 
+                                display: true,
+                                title: { display: true, text: 'x' }
+                            },
+                            y: { 
+                                display: true,
+                                title: { display: true, text: 'f(x)' }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 옵티마이저 차트
+            const optimizerCtx = document.getElementById('optimizerChart');
+            if (optimizerCtx) {
+                optimizerChart = new Chart(optimizerCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: []
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { 
+                                display: true,
+                                title: { display: true, text: '손실 함수 공간' }
+                            },
+                            y: { 
+                                display: true,
+                                title: { display: true, text: '손실값' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // 퍼셉트론 함수들
+        function updatePerceptron() {
+            const x1 = parseFloat(document.getElementById('input1').value);
+            const x2 = parseFloat(document.getElementById('input2').value);
+            const b = parseFloat(document.getElementById('bias').value);
+            
+            const weightedSum = x1 * 1 + x2 * 1 + b; // 가중치를 1로 고정
+            const output = weightedSum > 0 ? 1 : 0;
+            
+            document.getElementById('weightedSum').textContent = weightedSum.toFixed(2);
+            document.getElementById('perceptronOutput').textContent = output;
+            
+            totalInteractions++;
+            updateScores();
+        }
+        
+        function completePerceptron() {
+            if (!conceptStatus.perceptron) {
+                conceptStatus.perceptron = true;
+                conceptsMastered++;
+                totalScore += 20;
+                
+                document.getElementById('perceptronStatus').textContent = '완료!';
+                document.getElementById('perceptronBtn').innerHTML = '✅ 마스터 완료! <i class="fas fa-trophy ml-2"></i>';
+                document.getElementById('perceptronBtn').classList.add('bg-green-500');
+                
+                const card = document.querySelector('[data-concept="perceptron"]');
+                card.classList.add('completed');
+                
+                updateScores();
+            }
+        }
+        
+        // MLP 함수들
+        function updateMLP() {
+            const layers = document.getElementById('hiddenLayersSlider').value;
+            const neurons = document.getElementById('neuronsSlider').value;
+            
+            document.getElementById('hiddenLayersDisplay').textContent = layers;
+            document.getElementById('neuronsDisplay').textContent = neurons;
+            
+            // 파라미터 수 계산
+            const inputSize = 784; // MNIST 예시
+            let params = inputSize * neurons + neurons; // 첫 번째 층
+            
+            for (let i = 1; i < layers; i++) {
+                params += neurons * neurons + neurons; // 중간 층들
+            }
+            
+            params += neurons * 10 + 10; // 출력층 (10개 클래스)
+            
+            document.getElementById('paramCount').textContent = `~${(params/1000).toFixed(1)}K개`;
+            
+            const complexity = layers <= 2 ? '단순' : layers <= 3 ? '보통' : '복잡';
+            document.getElementById('complexity').textContent = complexity;
+            
+            totalInteractions++;
+            updateScores();
+        }
+        
+        function completeMLP() {
+            if (!conceptStatus.mlp) {
+                conceptStatus.mlp = true;
+                conceptsMastered++;
+                totalScore += 20;
+                
+                document.getElementById('mlpStatus').textContent = '완료!';
+                document.getElementById('mlpBtn').innerHTML = '✅ 설계 마스터! <i class="fas fa-trophy ml-2"></i>';
+                document.getElementById('mlpBtn').classList.add('bg-green-600');
+                
+                const card = document.querySelector('[data-concept="mlp"]');
+                card.classList.add('completed');
+                
+                updateScores();
+            }
+        }
+        
+        // 드래그 앤 드롭 설정
+        function setupDragAndDrop() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+            
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+            });
+            
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+        
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.getAttribute('data-order'));
+            e.dataTransfer.setData('text/html', e.target.outerHTML);
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        function handleDragEnter(e) {
+            e.target.classList.add('drag-over');
+        }
+        
+        function handleDragLeave(e) {
+            e.target.classList.remove('drag-over');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('drag-over');
+            
+            const draggedOrder = e.dataTransfer.getData('text/plain');
+            const expectedOrder = e.target.getAttribute('data-position');
+            
+            if (draggedOrder === expectedOrder) {
+                e.target.classList.add('correct');
+                e.target.innerHTML = e.dataTransfer.getData('text/html');
+                totalScore += 10;
+                
+                // 모든 위치가 올바르게 채워졌는지 확인
+                const correctZones = document.querySelectorAll('.drop-zone.correct');
+                if (correctZones.length === 3) {
+                    document.getElementById('kerasResult').textContent = '✅ 코드 조립 완료!';
+                    document.getElementById('kerasResult').classList.add('bg-green-100');
+                }
+            } else {
+                e.target.style.borderColor = '#dc2626';
+                setTimeout(() => {
+                    e.target.style.borderColor = '#d1d5db';
+                }, 1000);
+            }
+            
+            totalInteractions++;
+            updateScores();
+        }
+        
+        function completeKeras() {
+            const correctZones = document.querySelectorAll('.drop-zone.correct');
+            if (correctZones.length === 3 && !conceptStatus.keras) {
+                conceptStatus.keras = true;
+                conceptsMastered++;
+                totalScore += 25;
+                
+                document.getElementById('kerasStatus').textContent = '완료!';
+                document.getElementById('kerasBtn').innerHTML = '✅ 조립 마스터! <i class="fas fa-trophy ml-2"></i>';
+                document.getElementById('kerasBtn').classList.add('bg-green-600');
+                
+                const card = document.querySelector('[data-concept="keras"]');
+                card.classList.add('completed');
+                
+                updateScores();
+            }
+        }
+        
+        // 활성화 함수 관련
+        function showRandomActivation() {
+            const functions = ['relu', 'sigmoid', 'tanh'];
+            currentActivationType = functions[Math.floor(Math.random() * functions.length)];
+            drawActivationFunction(currentActivationType);
+            
+            // 옵션들의 정답 상태 리셋
+            document.querySelectorAll('#activationOptions .quiz-option').forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+                opt.style.pointerEvents = 'auto';
+            });
+        }
+        
+        function drawActivationFunction(type) {
+            if (!activationChart) return;
+            
+            const x = [];
+            const y = [];
+            
+            for (let i = -5; i <= 5; i += 0.1) {
+                x.push(i.toFixed(1));
+                
+                switch(type) {
+                    case 'relu':
+                        y.push(Math.max(0, i));
+                        break;
+                    case 'sigmoid':
+                        y.push(1 / (1 + Math.exp(-i)));
+                        break;
+                    case 'tanh':
+                        y.push(Math.tanh(i));
+                        break;
+                }
+            }
+            
+            activationChart.data.labels = x;
+            activationChart.data.datasets[0].data = y;
+            
+            const colors = {
+                relu: '#ef4444',
+                sigmoid: '#3b82f6',
+                tanh: '#10b981'
+            };
+            
+            activationChart.data.datasets[0].borderColor = colors[type];
+            activationChart.data.datasets[0].backgroundColor = colors[type] + '20';
+            activationChart.update('none');
+        }
+        
+        function checkActivation(element, isCorrect) {
+            const isReallyCorrect = (currentActivationType === 'relu' && isCorrect) ||
+                                  (currentActivationType === 'sigmoid' && element.textContent.includes('Sigmoid')) ||
+                                  (currentActivationType === 'tanh' && element.textContent.includes('Tanh'));
+            
+            const allOptions = document.querySelectorAll('#activationOptions .quiz-option');
+            allOptions.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (isReallyCorrect) {
+                element.classList.add('correct');
+                totalScore += 15;
+                activationQuizCount++;
+                
+                if (activationQuizCount >= 3) {
+                    document.getElementById('activationStatus').textContent = '퀴즈 마스터!';
+                }
+            } else {
+                element.classList.add('incorrect');
+                // 정답 표시
+                allOptions.forEach(opt => {
+                    if ((currentActivationType === 'relu' && opt.textContent.includes('ReLU')) ||
+                        (currentActivationType === 'sigmoid' && opt.textContent.includes('Sigmoid')) ||
+                        (currentActivationType === 'tanh' && opt.textContent.includes('Tanh'))) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+            
+            totalInteractions++;
+            updateScores();
+        }
+        
+        function newActivationQuiz() {
+            showRandomActivation();
+            totalInteractions++;
+        }
+        
+        function completeActivation() {
+            if (!conceptStatus.activation) {
+                conceptStatus.activation = true;
+                conceptsMastered++;
+                totalScore += 30;
+                
+                document.getElementById('activationStatus').textContent = '완료!';
+                document.getElementById('activationBtn').innerHTML = '✅ 함수 마스터! <i class="fas fa-trophy ml-2"></i>';
+                document.getElementById('activationBtn').classList.add('bg-green-600');
+                
+                const card = document.querySelector('[data-concept="activation"]');
+                card.classList.add('completed');
+                
+                updateScores();
+            }
+        }
+        
+        // 드롭아웃 관련
+        function updateDropoutRate() {
+            const rate = document.getElementById('dropoutRateSlider').value;
+            document.getElementById('dropoutRateDisplay').textContent = rate;
+        }
+        
+        function simulateDropout() {
+            const neurons = document.querySelectorAll('#neuronGrid .neuron');
+            const dropoutRate = parseFloat(document.getElementById('dropoutRateSlider').value);
+            let activeCount = 0;
+            
+            neurons.forEach(neuron => {
+                if (Math.random() < dropoutRate) {
+                    neuron.classList.remove('active');
+                    neuron.classList.add('inactive');
+                } else {
+                    neuron.classList.remove('inactive');
+                    neuron.classList.add('active');
+                    activeCount++;
+                }
+            });
+            
+            document.getElementById('activeNeurons').textContent = `${activeCount}/${neurons.length}`;
+            
+            dropoutSimulations++;
+            totalInteractions++;
+            
+            if (dropoutSimulations >= 5) {
+                document.getElementById('dropoutStatus').textContent = '시뮬레이션 마스터!';
+            }
+            
+            updateScores();
+        }
+        
+        function resetNeurons() {
+            const neurons = document.querySelectorAll('#neuronGrid .neuron');
+            neurons.forEach(neuron => {
+                neuron.classList.remove('inactive');
+                neuron.classList.add('active');
+            });
+            document.getElementById('activeNeurons').textContent = `${neurons.length}/${neurons.length}`;
+        }
+        
+        function completeDropout() {
+            if (!conceptStatus.dropout) {
+                conceptStatus.dropout = true;
+                conceptsMastered++;
+                totalScore += 25;
+                
+                document.getElementById('dropoutStatus').textContent = '완료!';
+                document.getElementById('dropoutBtn').innerHTML = '✅ 정규화 마스터! <i class="fas fa-trophy ml-2"></i>';
+                document.getElementById('dropoutBtn').classList.add('bg-green-600');
+                
+                const card = document.querySelector('[data-concept="dropout"]');
+                card.classList.add('completed');
+                
+                updateScores();
+            }
+        }
+        
+        // 배치 정규화
+        function animateBatchNorm() {
+            const normalizedElement = document.getElementById('normalizedValues');
+            normalizedElement.style.color = '#3b82f6';
+            normalizedElement.style.fontWeight = 'bold';
+            
+            setTimeout(() => {
+                normalizedElement.style.color = '';
+                normalizedElement.style.fontWeight = '';
+            }, 2000);
+            
+            totalInteractions++;
+            updateScores();
+        }
+        
+        function completeBatchNorm() {
+            if (!conceptStatus.batchnorm) {
+                conceptStatus.batchnorm = true;
+                conceptsMastered++;
+                totalScore += 25;
+                
+                document.getElementById('batchnormStatus').textContent = '완료!';
+                document.getElementById('batchnormBtn').innerHTML = '✅ 정규화 마스터! <i class="fas fa-trophy ml-2"></i>';
+                document.getElementById('batchnormBtn').classList.add('bg-green-600');
+                
+                const card = document.querySelector('[data-concept="batchnorm"]');
+                card.classList.add('completed');
+                
+                updateScores();
+            }
+        }
+        
+        // 옵티마이저 경로 시각화
+        function showOptimizerPath(type) {
+            if (!optimizerChart) return;
+            
+            const pathData = generateOptimizerPath(type);
+            
+            optimizerChart.data.datasets = [{
+                label: type.toUpperCase(),
+                data: pathData,
+                backgroundColor: getOptimizerColor(type),
+                borderColor: getOptimizerColor(type),
+                pointRadius: 4,
+                showLine: true,
+                tension: 0.3
+            }];
+            
+            optimizerChart.update();
+            
+            const descriptions = {
+                sgd: 'SGD: 직선적이지만 느린 수렴',
+                momentum: 'Momentum: 관성으로 빠른 수렴',
+                adam: 'Adam: 적응적 학습률로 안정적 수렴',
+                rmsprop: 'RMSprop: 학습률 적응으로 효율적 수렴'
+            };
+            
+            document.getElementById('optimizerInfo').textContent = descriptions[type];
+            
+            totalInteractions++;
+            updateScores();
+        }
+        
+        function generateOptimizerPath(type) {
+            const paths = {
+                sgd: [
+                    {x: 10, y: 10}, {x: 9, y: 8}, {x: 8, y: 6.5},
+                    {x: 7, y: 5}, {x: 6, y: 4}, {x: 5, y: 3},
+                    {x: 4, y: 2.5}, {x: 3, y: 2}, {x: 2, y: 1.5}, {x: 1, y: 1}
+                ],
+                momentum: [
+                    {x: 10, y: 10}, {x: 8, y: 7}, {x: 6, y: 4.5},
+                    {x: 4, y: 3}, {x: 2.5, y: 2}, {x: 1.5, y: 1.2}, {x: 1, y: 1}
+                ],
+                adam: [
+                    {x: 10, y: 10}, {x: 7, y: 6}, {x: 5, y: 3.5},
+                    {x: 3, y: 2.2}, {x: 1.8, y: 1.5}, {x: 1.2, y: 1.1}, {x: 1, y: 1}
+                ],
+                rmsprop: [
+                    {x: 10, y: 10}, {x: 8, y: 6.5}, {x: 6, y: 4},
+                    {x: 4, y: 2.8}, {x: 2.5, y: 1.8}, {x: 1.5, y: 1.3}, {x: 1, y: 1}
+                ]
+            };
+            
+            return paths[type] || paths.sgd;
+        }
+        
+        function getOptimizerColor(type) {
+            const colors = {
+                sgd: '#ef4444',
+                momentum: '#3b82f6',
+                adam: '#10b981',
+                rmsprop: '#8b5cf6'
+            };
+            return colors[type] || '#6b7280';
+        }
+        
+        function completeOptimizer() {
+            if (!conceptStatus.optimizer) {
+                conceptStatus.optimizer = true;
+                conceptsMastered++;
+                totalScore += 30;
+                
+                document.getElementById('optimizerStatus').textContent = '완료!';
+                document.getElementById('optimizerBtn').innerHTML = '✅ 최적화 마스터! <i class="fas fa-trophy ml-2"></i>';
+                document.getElementById('optimizerBtn').classList.add('bg-green-600');
+                
+                const card = document.querySelector('[data-concept="optimizer"]');
+                card.classList.add('completed');
+                
+                updateScores();
+            }
+        }
+        
+        // 간단한 완료 함수들
+        function completeInitialization() {
+            if (!conceptStatus.initialization) {
+                conceptStatus.initialization = true;
+                conceptsMastered++;
+                totalScore += 15;
+                updateConcept('initialization');
+            }
+        }
+        
+        function completeRegularization() {
+            if (!conceptStatus.regularization) {
+                conceptStatus.regularization = true;
+                conceptsMastered++;
+                totalScore += 15;
+                updateConcept('regularization');
+            }
+        }
+        
+        function completeScheduling() {
+            if (!conceptStatus.scheduling) {
+                conceptStatus.scheduling = true;
+                conceptsMastered++;
+                totalScore += 15;
+                updateConcept('scheduling');
+            }
+        }
+        
+        function completeCallbacks() {
+            if (!conceptStatus.callbacks) {
+                conceptStatus.callbacks = true;
+                conceptsMastered++;
+                totalScore += 15;
+                updateConcept('callbacks');
+            }
+        }
+        
+        function completeClipping() {
+            if (!conceptStatus.clipping) {
+                conceptStatus.clipping = true;
+                conceptsMastered++;
+                totalScore += 15;
+                updateConcept('clipping');
+            }
+        }
+        
+        function updateConcept(conceptName) {
+            const card = document.querySelector(`[data-concept="${conceptName}"]`);
+            const button = card.querySelector('button');
+            
+            button.innerHTML = '✅ 완료! <i class="fas fa-trophy ml-2"></i>';
+            button.classList.add('bg-green-600');
+            card.classList.add('completed');
+            
+            updateScores();
+        }
+        
+        // 점수 업데이트
+        function updateScores() {
+            document.getElementById('totalScore').textContent = totalScore;
+            document.getElementById('conceptsMastered').textContent = `${conceptsMastered}/12`;
+            document.getElementById('totalInteractions').textContent = totalInteractions;
+            
+            const progress = Math.round((conceptsMastered / 12) * 100);
+            document.getElementById('overallProgress').textContent = progress;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            // 대시보드 업데이트
+            document.getElementById('masteryProgress').textContent = `${progress}%`;
+            document.getElementById('interactionScore').textContent = totalInteractions * 5;
+            document.getElementById('practicalSkill').textContent = `${Math.min(100, totalScore / 10)}%`;
+        }
+    </script>
+</body>
+</html>
