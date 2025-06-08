@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>황회선 | AI 엔지니어 & 데이터 사이언티스트</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .skill-bar {
+            height: 8px;
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            border-radius: 2px;
+        }
+        .timeline-item {
+            border-left: 2px solid #e5e7eb;
+            padding-left: 20px;
+            margin-left: 10px;
+            position: relative;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 8px;
+            width: 10px;
+            height: 10px;
+            background: #4f46e5;
+            border-radius: 50%;
+        }
+        .paper-card {
+            border-left: 4px solid #4f46e5;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        .achievement-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="container mx-auto px-6 text-center">
+            <div class="mb-8">
+                <h1 class="text-5xl font-bold mb-4">황회선</h1>
+                <h2 class="text-2xl font-light mb-6">AI Engineer & Data Scientist</h2>
+                <p class="text-xl max-w-3xl mx-auto mb-8 leading-relaxed">
+                    독특한 관점과 창의적 접근으로 AI와 교육의 경계를 허무는 데이터 사이언티스트입니다.<br>
+                    CLOD 라는 독자적 융합이론 개발부터 실무 데이터 분석까지, 이론과 실무를 아우르는 전문가입니다.
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <a href="https://github.com/HWANG-HOE-SUN" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-6 py-3 rounded-lg transition duration-300">
+                        <i class="fab fa-github mr-2"></i>GitHub
+                    </a>
+                    <a href="mailto:ss418ss@naver.com" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-6 py-3 rounded-lg transition duration-300">
+                        <i class="fas fa-envelope mr-2"></i>Contact
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Achievements -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                <div class="p-6">
+                    <div class="achievement-number">1년</div>
+                    <p class="text-gray-600 font-medium">데이터분석가 실무경력</p>
+                    <p class="text-sm text-gray-500">바르카 농산물 데이터 전사관리</p>
+                </div>
+                <div class="p-6">
+                    <div class="achievement-number">8개</div>
+                    <p class="text-gray-600 font-medium">전문 자격증</p>
+                    <p class="text-sm text-gray-500">빅데이터분석기사 등</p>
+                </div>
+                <div class="p-6">
+                    <div class="achievement-number">매주 1편</div>
+                    <p class="text-gray-600 font-medium">LLM 논문 리뷰</p>
+                    <p class="text-sm text-gray-500">TrustLLM, Tensor Network 등</p>
+                </div>
+                <div class="p-6">
+                    <div class="achievement-number">12편+</div>
+                    <p class="text-gray-600 font-medium">기술정책 분석</p>
+                    <p class="text-sm text-gray-500">AI 신뢰성, 교육정책 등 주4회 테크기사리딩</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Projects -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold text-center mb-12">핵심 프로젝트</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <!-- CLOD & 공BTI -->
+                <div class="bg-white rounded-xl shadow-lg p-8 card-hover">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-brain text-purple-600 text-2xl mr-3"></i>
+                        <h3 class="text-xl font-bold">CLOD 이론 & 공BTI 개발</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        감응 기반 학습 이론(Cognitive-Learning Onto-Design) 개발 및 48문항 64유형 학습진단 시스템 구축
+                    </p>
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">핵심 성과</h4>
+                        <ul class="text-sm space-y-1">
+                            <li>• 감응 뎁스(D1~D5) 5단계 구조 이론 체계화</li>
+                            <li>• CORE-TI 검사 시스템 및 자동 리포트 생성</li>
+                            <li>• 텀블벅 펀딩 준비 (목표 200만원)</li>
+                            <li>• IRB 승인 30인 실험 설계 완료</li>
+                        </ul>
+                    </div>
+                    <div class="flex space-x-2">
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">교육학</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">심리측정</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">통계분석</span>
+                    </div>
+                </div>
+
+                <!-- KnowGram -->
+                <div class="bg-white rounded-xl shadow-lg p-8 card-hover">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-print text-blue-600 text-2xl mr-3"></i>
+                        <h3 class="text-xl font-bold">KnowGram 에듀테크 SaaS</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        CLOD 기반 마이크로프린팅 학습 시스템. AI가 개인 학습 패턴을 분석하여 최적화된 요약본을 생성
+                    </p>
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">기술 구조</h4>
+                        <ul class="text-sm space-y-1">
+                            <li>• GPT-4o 기반 콘텐츠 요약 및 개인화</li>
+                            <li>• Python + FastAPI 백엔드</li>
+                            <li>• React + Tailwind 프론트엔드</li>
+                            <li>• Flutter 모바일 앱 연동</li>
+                        </ul>
+                    </div>
+                    <div class="flex space-x-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">SaaS</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">에듀테크</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">창업</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Experience -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold text-center mb-12">실무 경험</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <!-- 바르카 경력 -->
+                <div class="timeline-item mb-8">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-2">
+                        <h3 class="text-xl font-bold">데이터분석가 (연구원)</h3>
+                        <span class="text-gray-500 font-medium">2024.03 - 2025.03</span>
+                    </div>
+                    <p class="text-purple-600 font-semibold mb-4">주식회사 바르카</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">농산물 데이터 전사관리 시스템 (2024.04~06)</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• 공공데이터 API(KAMIS, 농넷) 자동수집 파이프라인 구축</li>
+                                <li>• Python 기반 전처리 프로세스 자동화로 80% 시간단축</li>
+                                <li>• 데이터 정확도 90% 이상 확보</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">NDVI 작물 생장 모니터링 (2024.07~09)</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• 공공 인공위성 NDVI 데이터 활용 전국 농작물 분석</li>
+                                <li>• 지역별 생육지표 자동 시각화 시스템</li>
+                                <li>• 이상치 탐지 로직 도입 정기 리포트 제공</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">기상청 데이터 수집·분석 (2024.06~08)</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• 과거 기상데이터 및 장기예보 PDF 정형화</li>
+                                <li>• ML/DL 모델 학습용 데이터 가공</li>
+                                <li>• Granger 인과관계 분석을 통한 작물-기상 관계 정리</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">주요 작물 예측 모델 개발 (2024.09~12)</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• 양파, 마늘, 배추 ML 기반 가격·생산량 예측</li>
+                                <li>• 양파 3개년 백테스트 MAPE 5% 내외 달성</li>
+                                <li>• SHAP 분석을 통한 모델 해석 및 전략 차별화</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 학부연구생 경력 -->
+                <div class="timeline-item mb-8">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-2">
+                        <h3 class="text-xl font-bold">학부연구생</h3>
+                        <span class="text-gray-500 font-medium">2020.12 - 2022.03</span>
+                    </div>
+                    <p class="text-purple-600 font-semibold mb-4">홍익대학교 산업공학과</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">DTW 기반 추진 전동기 잔여수명 예측 연구</h4>
+                        <ul class="text-sm space-y-1">
+                            <li>• Dynamic Time Warping을 활용한 시계열 유사도 분석</li>
+                            <li>• 2017년 선박 추진 전동기 온도 센서 데이터 활용</li>
+                            <li>• Sliding Window 방식과 랜덤 샘플링 비교 실험</li>
+                            <li>• 계산량 대비 성능 최적화 방안 도출</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research & Analysis -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold text-center mb-12">연구 및 분석</h2>
+            
+            <!-- LLM Paper Reviews -->
+            <div class="mb-12">
+                <h3 class="text-2xl font-bold mb-6 text-center">LLM 논문 리뷰 (4편 예시)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="paper-card p-6 rounded-lg">
+                        <h4 class="font-bold mb-2">TrustLLM: Trustworthiness in Large Language Models</h4>
+                        <p class="text-sm text-gray-600 mb-3">12개 오픈소스 모델의 신뢰성 평가 프레임워크 분석. Robustness와 Value-alignment 중심 검토.</p>
+                        <div class="flex space-x-2">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">신뢰성</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">평가</span>
+                        </div>
+                    </div>
+                    
+                    <div class="paper-card p-6 rounded-lg">
+                        <h4 class="font-bold mb-2">LLM-guided Tensor Network Rank Selection</h4>
+                        <p class="text-sm text-gray-600 mb-3">텐서 네트워크 최적화를 위한 LLM 활용 방법론. 5배 압축률과 해석가능성 향상 제안.</p>
+                        <div class="flex space-x-2">
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">최적화</span>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">압축</span>
+                        </div>
+                    </div>
+                    
+                    <div class="paper-card p-6 rounded-lg">
+                        <h4 class="font-bold mb-2">Transformer Architectures for Text Understanding</h4>
+                        <p class="text-sm text-gray-600 mb-3">Flash-Attention 2의 한국어 데이터셋 벤치테스트. 18% 지연시간 단축 성과 확인.</p>
+                        <div class="flex space-x-2">
+                            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">성능</span>
+                            <span class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded">한국어</span>
+                        </div>
+                    </div>
+                    
+                    <div class="paper-card p-6 rounded-lg">
+                        <h4 class="font-bold mb-2">Hidden Holes: Topological Aspects of Language Models</h4>
+                        <p class="text-sm text-gray-600 mb-3">Persistent Homology를 적용한 polysemantic neurons 탐지 방법론 연구.</p>
+                        <div class="flex space-x-2">
+                            <span class="px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded">위상수학</span>
+                            <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded">해석</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Policy Analysis -->
+            <div>
+                <h3 class="text-2xl font-bold mb-6 text-center">기술정책 분석 (12편+)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h5 class="font-semibold text-sm mb-2">AI 신뢰성 & 윤리</h5>
+                        <ul class="text-xs space-y-1">
+                            <li>• 착하고 믿을만한 AI 경쟁력</li>
+                            <li>• 인간 명령 거부 AI 사례</li>
+                            <li>• AI 해킹방어 시스템</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h5 class="font-semibold text-sm mb-2">교육정책 & 제도</h5>
+                        <ul class="text-xs space-y-1">
+                            <li>• 고교학점제의 모순과 엇박</li>
+                            <li>• AI 디지털교과서 반감</li>
+                            <li>• SEL 기반 인성교육</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h5 class="font-semibold text-sm mb-2">산업 & 정책동향</h5>
+                        <ul class="text-xs space-y-1">
+                            <li>• 지자체 캐릭터 정책홍보</li>
+                            <li>• SI 대기업 AI 신사업</li>
+                            <li>• 구글 AlphaEvolve 발표</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Skills -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold text-center mb-12">기술 스택</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Programming -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="font-bold mb-4 flex items-center">
+                            <i class="fas fa-code text-blue-600 mr-2"></i>Programming
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">Python</span>
+                                    <span class="text-sm text-gray-500">90%</span>
+                                </div>
+                                <div class="bg-gray-200 rounded-full h-2">
+                                    <div class="skill-bar rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">R</span>
+                                    <span class="text-sm text-gray-500">75%</span>
+                                </div>
+                                <div class="bg-gray-200 rounded-full h-2">
+                                    <div class="skill-bar rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">SQL</span>
+                                    <span class="text-sm text-gray-500">85%</span>
+                                </div>
+                                <div class="bg-gray-200 rounded-full h-2">
+                                    <div class="skill-bar rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI/ML -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="font-bold mb-4 flex items-center">
+                            <i class="fas fa-robot text-purple-600 mr-2"></i>AI/ML
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">LangChain/RAG</span>
+                                    <span class="text-sm text-gray-500">80%</span>
+                                </div>
+                                <div class="bg-gray-200 rounded-full h-2">
+                                    <div class="skill-bar rounded-full" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">Fine-tuning</span>
+                                    <span class="text-sm text-gray-500">70%</span>
+                                </div>
+                                <div class="bg-gray-200 rounded-full h-2">
+                                    <div class="skill-bar rounded-full" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">ML/통계분석</span>
+                                    <span class="text-sm text-gray-500">85%</span>
+                                </div>
+                                <div class="bg-gray-200 rounded-full h-2">
+                                    <div class="skill-bar rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tools -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="font-bold mb-4 flex items-center">
+                            <i class="fas fa-tools text-green-600 mr-2"></i>Tools
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">Excel/Tableau</span>
+                                    <span class="text-sm text-gray-500">90%</span>
+                                </div>
+                                <div class="bg-gray-200 rounded-full h-2">
+                                    <div class="skill-bar rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">Zapier/자동화</span>
+                                    <span class="text-sm text-gray-500">80%</span>
+                                </div>
+                                <div class="bg-gray-200 rounded-full h-2">
+                                    <div class="skill-bar rounded-full" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">SPSS/Minitab</span>
+                                    <span class="text-sm text-gray-500">75%</span>
+                                </div>
+                                <div class="bg-gray-200 rounded-full h-2">
+                                    <div class="skill-bar rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education & Certifications -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold text-center mb-12">학력 및 자격증</h2>
+            
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Education -->
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-graduation-cap text-blue-600 mr-3"></i>학력
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h4 class="font-bold">홍익대학교 산업공학과</h4>
+                            <p class="text-gray-600">2016.03 - 2022.08</p>
+                            <p class="text-sm"><strong>전체 평점:</strong> 4.11/4.50</p>
+                            <p class="text-sm"><strong>전공 평점:</strong> 4.13/4.50</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h5 class="font-semibold mb-2">주요 전공 과목</h5>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div>경영과학: A+</div>
+                                <div>통계학: A+</div>
+                                <div>데이터마이닝: A+</div>
+                                <div>데이터과학: A+</div>
+                                <div>의사결정분석: A+</div>
+                                <div>사업타당성분석: A+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certifications -->
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-certificate text-green-600 mr-3"></i>자격증 (8개)
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">빅데이터분석기사</span>
+                            <span class="text-sm text-gray-500">2021.12</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">데이터분석준전문가(ADSP)</span>
+                            <span class="text-sm text-gray-500">2021.04</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">SQL개발자(SQLD)</span>
+                            <span class="text-sm text-gray-500">2021.10</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">사회조사분석사 2급</span>
+                            <span class="text-sm text-gray-500">2021.09</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">리더십지도사 1급</span>
+                            <span class="text-sm text-gray-500">2023.10</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">ITQ 인터넷/한글 A/B</span>
+                            <span class="text-sm text-gray-500">2020.03</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">컴퓨터활용능력 2급</span>
+                            <span class="text-sm text-gray-500">2017.09</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">한국사능력검정 3급</span>
+                            <span class="text-sm text-gray-500">2018.02</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Additional Training -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold text-center mb-12">교육 및 기타 경험</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <!-- Education Courses -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold mb-4">교육 이수</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-bold mb-2">DS School 데이터분석가 입문반 28기</h4>
+                            <p class="text-sm text-gray-600 mb-2">2018.12</p>
+                            <ul class="text-sm space-y-1">
+                                <li>• Kaggle 프로젝트 첫 입문 (Titanic, Bike-sharing)</li>
+                                <li>• Slack 협업툴 경험</li>
+                                <li>• ML 모델 입문 및 성능 개선</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-bold mb-2">AI기반 챗봇 및 OCR 개발 전문가 과정</h4>
+                            <p class="text-sm text-gray-600 mb-2">2022.01 - 2022.07</p>
+                            <ul class="text-sm space-y-1">
+                                <li>• 웹개발 프론트/백엔드 실습</li>
+                                <li>• Python-DB 연동 및 SQLite3</li>
+                                <li>• 텍스트 분석을 위한 AI/OCR 기초</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other Experiences -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">기타 경험</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">대외활동</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• 스펙그라운드 공모전 동아리 R3</li>
+                                <li>• 홍익대 산업공학과 밴드동아리</li>
+                                <li>• 6번의 공연 드럼 연주</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">근무 경험</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• 스크린 골프장 매장관리</li>
+                                <li>• 롯데리아 서비스직</li>
+                                <li>• 초등 수학 학원 강사</li>
+                                <li>• 육군 1사단 병장 만기전역</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">개인 관심사</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• 독서 (50권+ 완독)</li>
+                                <li>• 음악, 운동, 게임</li>
+                                <li>• IT 트렌드 분석</li>
+                                <li>• 글쓰기 및 블로깅</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work Philosophy -->
+    <section class="py-16 bg-gradient-to-r from-blue-50 to-purple-50">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold text-center mb-12">업무 철학</h2>
+            
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold mb-4">"독특한 관점으로 의미를 찾는 데이터 사이언티스트"</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-bold mb-3 flex items-center">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>탐구 방식
+                        </h4>
+                        <ul class="space-y-2 text-sm">
+                            <li>• 다른 사람들이 바라보지 않는 시선과 관점으로 접근</li>
+                            <li>• 누구도 의문을 가지지 않는 부문에 질문을 던지기</li>
+                            <li>• 엑셀 파일만 봐도 분석하고 싶은 욕구를 참지 못함</li>
+                            <li>• 목표보다는 과정에서의 학습과 즐거움을 추구</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold mb-3 flex items-center">
+                            <i class="fas fa-users text-blue-500 mr-2"></i>협업 스타일
+                        </h4>
+                        <ul class="space-y-2 text-sm">
+                            <li>• 변수가 생겨도 당황하지 않고 최선의 방법 탐색</li>
+                            <li>• 어떤 포지션에서도 일의 의미를 찾고 능동적 기획</li>
+                            <li>• 자신의 취약점과 타인의 강점을 인정하고 협력</li>
+                            <li>• 효율성과 동료 관계를 동시에 고려하는 리더형</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="py-16 gradient-bg text-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-8">Contact</h2>
+            <p class="text-xl mb-8">새로운 도전과 협업을 기다리고 있습니다</p>
+            
+            <div class="flex justify-center space-x-8">
+                <a href="mailto:ss418ss@naver.com" class="flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 px-6 py-3 rounded-lg transition duration-300">
+                    <i class="fas fa-envelope mr-3"></i>ss418ss@naver.com
+                </a>
+                <a href="https://github.com/HWANG-HOE-SUN" class="flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 px-6 py-3 rounded-lg transition duration-300">
+                    <i class="fab fa-github mr-3"></i>GitHub
+                </a>
+            </div>
+            
+            <div class="mt-12 text-sm opacity-75">
+                <p>© 2025 황회선. All rights reserved.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Add smooth animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate skill bars
+            const skillBars = document.querySelectorAll('.skill-bar');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.width = entry.target.style.width;
+                    }
+                });
+            });
+            
+            skillBars.forEach(bar => observer.observe(bar));
+
+            // Add hover effects to cards
+            const cards = document.querySelectorAll('.card-hover');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
